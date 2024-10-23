@@ -80,8 +80,7 @@ for file in files:
 
         sensor_data = pd.read_csv(sensor_data_file_path, decimal=",")
         sensor_data = sensor_data.apply(pd.to_numeric, errors='coerce')
-        # sensor_data.columns = sensor_data.columns.str.replace(' Ave. (µV)', '', regex=True)
-        sensor_data.columns = sensor_data.columns.str.replace(r' Ave\. \(µV\)', '', regex=True)
+        sensor_data.columns = sensor_data.columns.str.replace(' Ave. \(µV\)', '', regex=True)
 
         # Read the calibration data CSV file
         calibration_data_file_path = 'Heat_flux_sensors_calibration.csv'
@@ -124,4 +123,18 @@ for file in files:
             S = calculate_sensitivity(S_0, S_C, T_S)
 
             HeatfluxData['HeatFlux' + column] = calculate_heatflux_vectorized(sensor_data[column], S)
-            HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
+            # #print(column[0:2])
+            # calibration_row = calibration_data[calibration_data['serial number'] == sensor_id]
+            # HeatfluxData['HeatFlux' + column] = sensor_data.apply(
+            # lambda row: calculate_heatflux(row[column], T_S, calibration_row['number'].values[0], calibration_data),
+            # axis=1
+            # )
+
+HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
+HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
+
+# try:
+#     del metadata_lines, data_lines, lines, line, data, data_section, key, txt_file_path, value
+# except:
+#     print('')
+# del directory, file, filepath, files, prefix, variable_name, calibration_data, calibration_data_file_path, calibration_row, column, T_S, sensor_id, sensor_data_file_path, sensor_data, columns_to_keep, data_columns_Peltier

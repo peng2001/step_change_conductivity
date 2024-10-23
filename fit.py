@@ -19,7 +19,7 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5):
     #   tau = 1/(diffusivity*s^2)
     #   s = n*pi/2L
     summation = 0 # start at zero, add each term in series
-    for n in range(1, 100, 2): # loop through odd numbers to 999 to approximate infinite series
+    for n in range(1, 100, 2): # loop through odd numbers to 100 to approximate infinite series
         s = n*3.14159265/(2*L)
         tau = 1/((diffusivityEminus5*10**(-5))*(s**2))
         summation += (-2*deltaT/L)*np.exp(-t/tau)

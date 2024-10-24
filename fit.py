@@ -19,7 +19,7 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5):
     #   tau = 1/(diffusivity*s^2)
     #   s = n*pi/2L
     summation = 0 # start at zero, add each term in series
-    for n in range(1, 100, 2): # loop through odd numbers to 100 to approximate infinite series
+    for n in range(1, 6, 2): # loop through odd numbers to 100 to approximate infinite series
         s = n*3.14159265/(2*L)
         tau = 1/((diffusivityEminus5*10**(-5))*(s**2))
         summation += (-2*deltaT/L)*np.exp(-t/tau)
@@ -50,6 +50,16 @@ def graph_heat_vs_time(exp_time, exp_heatflux):
     plt.title('Heat Flux over Time')
     plt.show()
 
+def calculate_fit_error(exp_time, exp_heatflux, conductivity,diffusivity):
+    linspace_time = np.arange(exp_time[0]+fitting_time_skip, exp_time[-1], 0.1)
+    fitted_heat_flux = [step_change_heat_flux(t, conductivity, diffusivity) for t in linspace_time]
+    # filter values in experimental value to only include points that are used to fit equation
+    filtered_exp_time = [time for time in exp_time if linspace_time[0] <= time <= linspace_time[-1]]
+    filtered_exp_heat = [exp_heatflux[i] for i in range(len(exp_time)) if linspace_time[0] <= exp_time[i] <= linspace_time[-1]]
+    interpolated_fitted_heat_flux = np.interp(filtered_exp_time, linspace_time, fitted_heat_flux)
+    avg_abs_relative_err = np.sum(np.abs(np.subtract(filtered_exp_heat,interpolated_fitted_heat_flux)))/np.sum(np.abs(filtered_exp_heat))
+    print("Average absolute relative error of heat equation flux fit: "+str(100*avg_abs_relative_err)+" %")
+
 
 if __name__ == "__main__":
     print(HeatfluxData.columns)
@@ -65,5 +75,6 @@ if __name__ == "__main__":
     print("**Results**")
     print("Conductivity: "+str(conductivity)+" W/(m*K)")
     print("Diffusivity: "+str(diffusivity)+" m^2/s")
+    calculate_fit_error(time_window, heat_fluxes, conductivity,diffusivityEminus5)
     graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     graph_heat_vs_time_and_fitted_eqn(time_window, heat_fluxes, conductivity,diffusivityEminus5)

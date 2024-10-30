@@ -1,17 +1,22 @@
 import numpy as np
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-
+import toml
 from setup import *
 
-# Config here
-L = 0.00585 # metres, equals 1/2 of cell thickness
-deltaT = 5 # degrees C, magnitude of step change
-start_time = 1207+10 # start time elapsed to fit equation, seconds (the addition is determined manually, from the time diff when power is applied until temperature reaches steady state)
-end_time = 1500 # end time elapsed to fit equation, seconds
-heat_flux_offset = 276
-fitting_time_skip = 20 # seconds, integer, ignore first few seconds because of overshoot
-#################################################################
+config_file = "config_25to30.toml"
+
+##########################################################
+
+with open(config_file, 'r') as f:
+    inputs = toml.load(f)
+
+L = inputs["L"] # metres, equals 1/2 of cell thickness
+deltaT = inputs["deltaT"] # degrees C, magnitude of step change
+start_time = inputs["start_time"]+inputs["start_time_addition"] # start time elapsed to fit equation, seconds (the addition is determined manually, from the time diff when power is applied until temperature reaches steady state)
+end_time = inputs["end_time"] # end time elapsed to fit equation, seconds
+heat_flux_offset = inputs["heat_flux_offset"]
+fitting_time_skip = inputs["fitting_time_skip"] # seconds, integer, ignore first few seconds because of overshoot
 
 def step_change_heat_flux(t, conductivity,diffusivityEminus5):
     # t is time since step change in seconds, conductivity and diffusivity are fitting parameters

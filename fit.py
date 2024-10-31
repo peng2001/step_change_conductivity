@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import curve_fit
+from lmfit import Model, Parameters
 import matplotlib.pyplot as plt
 import toml
 from setup import *
@@ -32,6 +33,7 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5):
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     fit_values, covariance = curve_fit(step_change_heat_flux, xdata=time_list, ydata=heat_flux_list, maxfev=1000000)
+    print("Parameter stdevs: "+str(np.sqrt(np.diag(covariance))))
     return fit_values
 
 def graph_heat_vs_time_and_fitted_eqn(exp_time, exp_heatflux, conductivity,diffusivity):

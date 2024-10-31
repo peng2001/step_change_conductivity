@@ -1,5 +1,3 @@
-from numpy.lib.function_base import average
-import gw_utils as util
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,6 +9,27 @@ import os
 import pickle
 from numpy import exp, sin
 from lmfit import minimize, Parameters, fit_report
+
+# code to load data from Sabine's rig and change data format to work with Gavin's code
+from setup import *
+with open(config_file, 'r') as f:
+    inputs = toml.load(f)
+
+L = inputs["L"] # metres, equals 1/2 of cell thickness
+deltaT = inputs["deltaT"] # degrees C, magnitude of step change
+start_time = inputs["start_time"]+inputs["start_time_addition"] # start time elapsed to fit equation, seconds (the addition is determined manually, from the time diff when power is applied until temperature reaches steady state)
+end_time = inputs["end_time"] # end time elapsed to fit equation, seconds
+heat_flux_offset = inputs["heat_flux_offset"]
+fitting_time_skip = inputs["fitting_time_skip"] # seconds, integer, ignore first few seconds because of overshoot
+
+# getting relevant data points
+heat_flux_column = HeatfluxData.average_heatflux + heat_flux_offset
+time_window = np.subtract([time for time in HeatfluxData.time_elapsed if start_time <= time <= end_time], start_time)
+heat_fluxes = [heat_flux_column[i] for i in range(len(HeatfluxData.time_elapsed)) if start_time <= HeatfluxData.time_elapsed[i] <= end_time]
+time_window_for_fitting = [time for time in time_window if time >= fitting_time_skip] # skips first few seconds to ignore overshoots, as defined on top
+heat_fluxes_for_fitting = [heat_fluxes[i] for i in range(len(time_window)) if time_window[i] >= fitting_time_skip]
+
+
 
 
 '''

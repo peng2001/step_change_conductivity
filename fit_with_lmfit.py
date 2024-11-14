@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import toml
 from setup import *
 
-config_file = "config_25to30.toml"
+config_file = "config_20to25.toml"
 
 ##########################################################
 
@@ -32,14 +32,11 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5,heat_flux_offset):
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
-    k_guess = 0.61
-    alpha_guess = 0.0273
-    offset_guess = -380
+    k_guess = 0.7
+    alpha_guess = 0.025
+    offset_guess = 0
     params = model.make_params(conductivity=k_guess,diffusivityEminus5=alpha_guess,heat_flux_offset=offset_guess)
-    params['conductivity'].set(min=0.6, max=0.62)
-    params['diffusivityEminus5'].set(min=0.027, max=0.0275)
-    params['heat_flux_offset'].set(min=-390, max=-370)
-    result = model.fit(heat_flux_list, params, t=time_list, method='ampgo')
+    result = model.fit(heat_flux_list, params, t=time_list)
     return result
 
 def graph_heat_vs_time_and_fitted_eqn(exp_time, exp_heatflux, conductivity, diffusivity, heat_flux_offset):

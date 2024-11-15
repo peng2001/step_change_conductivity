@@ -11,7 +11,7 @@ def calculate_sensitivity(S_0, S_C, T_S, T_0=22.5):
     return S_0 + (T_S - T_0) * S_C
 
 def calculate_heatflux_vectorized(U, S):
-    return U.astype(float) / S
+    return U.astype(float)*(1000*1000) / S
 
 # List all files in the directory
 files = os.listdir(directory)

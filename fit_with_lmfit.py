@@ -1,11 +1,12 @@
 import numpy as np
 from scipy.optimize import curve_fit
+from scipy.signal import savgol_filter
 from lmfit import Model, Parameters
 import matplotlib.pyplot as plt
 import toml
 from setup import *
 
-config_file = "config_15to20.toml"
+config_file = "config_20to25.toml"
 
 ##########################################################
 
@@ -32,10 +33,11 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5,heat_flux_offset):
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
-    k_guess = 0.7
-    alpha_guess = 0.025
-    offset_guess = 0
+    k_guess = -0.1
+    alpha_guess = 0.001
+    offset_guess = -170
     params = model.make_params(conductivity=k_guess,diffusivityEminus5=alpha_guess,heat_flux_offset=offset_guess)
+    # params['heat_flux_offset'].set(value=offset_guess, vary=False) # FIX IT SO THAT IT WONT BE FITTED
     result = model.fit(heat_flux_list, params, t=time_list)
     return result
 
@@ -75,12 +77,14 @@ if __name__ == "__main__":
     print("Heat flux data columns")
     print(HeatfluxData)
     print(HeatfluxData.time[start_time])
-    graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     heat_flux_column = HeatfluxData.average_heatflux
+    graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     time_window = np.subtract([time for time in HeatfluxData.time_elapsed if start_time <= time <= end_time], start_time)
     heat_fluxes = [heat_flux_column[i] for i in range(len(HeatfluxData.time_elapsed)) if start_time <= HeatfluxData.time_elapsed[i] <= end_time]
+    heat_fluxes = savgol_filter(heat_fluxes, window_length=1000, polyorder=2) # smooth the data with savgol filter
     time_window_for_fitting = [time for time in time_window if time >= fitting_time_skip] # skips first few seconds to ignore overshoots, as defined on top
     heat_fluxes_for_fitting = [heat_fluxes[i] for i in range(len(time_window)) if time_window[i] >= fitting_time_skip]
+    # graph_heat_vs_time(time_window_for_fitting, heat_fluxes_for_fitting)
     #fitting the analytical solution
     result = fit_heat_flux_equation(time_window_for_fitting, heat_fluxes_for_fitting)
     heat_flux_offset = result.params['heat_flux_offset'].value
@@ -96,5 +100,7 @@ if __name__ == "__main__":
     print("Conductivity stderr: "+str(conductivity_error)+" W/(m*K)")
     print("Diffusivity stderr: "+str(diffusivity_error)+" m^2/s")
     print("Heat flux offset: "+str(heat_flux_offset)+" W/m^2")
-    graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
+    # conductivity = -0.1
+    # diffusivityEminus5 = 0.001
+    # heat_flux_offset = -170
     graph_heat_vs_time_and_fitted_eqn(time_window, heat_fluxes, conductivity,diffusivityEminus5,heat_flux_offset)

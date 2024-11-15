@@ -1,12 +1,9 @@
-directory = 'data/test'
+directory = 'data/in-plane-thermal-cond/no_current_wires_data'
 
 import os
 import pandas as pd
 import numpy as np
 from io import StringIO
-
-
-data_columns_Peltier = ['Current_temp_A0', 'Current_temp_A1', 'Current_temp_A2','Current_temp_A3', 'Current_temp_A4', 'Current_temp_A5','Current_temp_A6', 'Current_temp_A7',  'Current_temp_B0', 'Current_temp_B1', 'Current_temp_B2','Current_temp_B3', 'Current_temp_B4', 'Current_temp_B5','Current_temp_B6', 'Current_temp_Falz-','Current_temp_C0', 'Current_temp_C1', 'Current_temp_C2','Current_temp_C3', 'Current_temp_C4', 'Current_temp_C5','Current_temp_C6', 'Current_temp_C7_Ableiter+','Current_temp_D0', 'Current_temp_D1', 'Current_temp_D2','Current_temp_D3', 'Current_temp_D4', 'Current_temp_D5','Current_temp_D6', 'Current_temp_D7_Ableiter-','time']
 
 def calculate_sensitivity(S_0, S_C, T_S, T_0=22.5):
     return S_0 + (T_S - T_0) * S_C
@@ -19,7 +16,7 @@ files = os.listdir(directory)
 files = sorted(files, key=lambda x: (not 'peltier_control' in x, x)) # first evaluate peltier_control
 
 for file in files:
-    if 'peltier_control' in file:
+    if 'eric_carlos' in file:
         # Determine the prefix (A, B, C, or D) from the filename
         prefix = file.split('_')[2]
         
@@ -75,7 +72,7 @@ for file in files:
         CyclerData['DPT Time'] = pd.to_datetime(CyclerData['DPT Time'], format='%d-%b-%y %I:%M:%S %p') 
         CyclerData['DPT Time'] = CyclerData['DPT Time'].dt.tz_localize('Europe/London')
 
-    elif 'heatflux' in file:
+    elif 'stepchange' in file:
         sensor_data_file_path = os.path.join(directory, file)
 
         sensor_data = pd.read_csv(sensor_data_file_path, decimal=",")
@@ -101,6 +98,8 @@ for file in files:
         for column in sensor_data.columns[1:]:
             sensor_id = '003066-' +column[-3:]
             #T_S=
+            print("COLUMN:")
+            print(column)
             if column[0] == 'A':
                 T_S = Peltier_control_A['Current_temp_' + column[0:2]][SensorIndex]
             elif column[0] == 'B':

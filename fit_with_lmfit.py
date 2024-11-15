@@ -72,6 +72,7 @@ def calculate_fit_error(exp_time, exp_heatflux, conductivity,diffusivity,heat_fl
 
 
 if __name__ == "__main__":
+    print("Heat flux data columns")
     print(HeatfluxData.columns)
     print(HeatfluxData.time[start_time])
     heat_flux_column = HeatfluxData.average_heatflux

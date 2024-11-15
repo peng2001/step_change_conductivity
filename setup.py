@@ -5,6 +5,8 @@ import pandas as pd
 import numpy as np
 from io import StringIO
 
+data_columns_Peltier = ['Current_temp_1', 'Current_temp_2', 'time']
+
 def calculate_sensitivity(S_0, S_C, T_S, T_0=22.5):
     return S_0 + (T_S - T_0) * S_C
 
@@ -21,7 +23,7 @@ for file in files:
         prefix = file.split('_')[2]
         
         # Construct the variable name and read the CSV file
-        variable_name = f"Peltier_control_{prefix}"
+        variable_name = f"Peltier_control"
         filepath = os.path.join(directory, file)
         
         # Read the CSV file into a pandas DataFrame
@@ -76,8 +78,9 @@ for file in files:
         sensor_data_file_path = os.path.join(directory, file)
 
         sensor_data = pd.read_csv(sensor_data_file_path, decimal=",")
-        sensor_data = sensor_data.apply(pd.to_numeric, errors='coerce')
-        sensor_data.columns = sensor_data.columns.str.replace(' Ave. \(µV\)', '', regex=True)
+        sensor_data = sensor_data[['Unnamed: 0', 'E1 flux Last (V)', 'E2 flux Last (V)']]
+        # sensor_data = sensor_data.apply(pd.to_numeric, errors='coerce')
+        sensor_data.columns = sensor_data.columns.str.replace(' flux Last (V)', '', regex=True)
 
         # Read the calibration data CSV file
         calibration_data_file_path = 'Heat_flux_sensors_calibration.csv'
@@ -88,7 +91,8 @@ for file in files:
 
         #T_S=25
         HeatfluxData=pd.DataFrame()
-        HeatfluxData['time']=pd.to_datetime(sensor_data['Unnamed: 0'], unit='s')
+        HeatfluxData['time']=pd.to_datetime(sensor_data['Unnamed: 0'], format='%Y-%m-%dT%H:%M:%S%z')
+        print(HeatfluxData)
         if 'CyclerData' in locals():
             CyclerData['DPT Time Adjust'] = CyclerData['DPT Time']
             SensorIndex=(HeatfluxData['time'].dt.tz_localize('UTC+01:00') - CyclerData['DPT Time Adjust'][0]).abs().idxmin()    
@@ -96,38 +100,49 @@ for file in files:
             SensorIndex = 1011
 
         for column in sensor_data.columns[1:]:
-            sensor_id = '003066-' +column[-3:]
-            #T_S=
-            print("COLUMN:")
-            print(column)
-            if column[0] == 'A':
-                T_S = Peltier_control_A['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'B':
-                T_S = Peltier_control_B['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'C':
-                T_S = Peltier_control_C['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'D':
-                T_S = Peltier_control_D['Current_temp_' + column[0:2]][SensorIndex]
-            else:
-                result = None
-                print("Column prefix not recognized")
-            #print(str(column[0:2]) + ' is ' + T_S + ' °C')
-            # print(T_S)
-            if np.isnan(T_S):
-                print('Temperature is not a number for ' + column)
+            if column == "Current_temp_1":
+                sensor_id = 'E1'
+                T_S = Peltier_control['Current_temp_' + column[0:2]][SensorIndex]
+                #print(str(column[0:2]) + ' is ' + T_S + ' °C')
+                # print(T_S)
+                if np.isnan(T_S):
+                    print('Temperature is not a number for ' + column)
 
-            calibration_row = calibration_data[calibration_data['serial number'] == sensor_id].iloc[0]
-            S_0 = calibration_row['Sensitivity S0']
-            S_C = calibration_row['Correction factor Sc']
-            S = calculate_sensitivity(S_0, S_C, T_S)
+                calibration_row = calibration_data[calibration_data['serial number'] == sensor_id].iloc[0]
+                S_0 = calibration_row['Sensitivity S0']
+                S_C = calibration_row['Correction factor Sc']
+                S = calculate_sensitivity(S_0, S_C, T_S)
 
-            HeatfluxData['HeatFlux' + column] = calculate_heatflux_vectorized(sensor_data[column], S)
-            # #print(column[0:2])
-            # calibration_row = calibration_data[calibration_data['serial number'] == sensor_id]
-            # HeatfluxData['HeatFlux' + column] = sensor_data.apply(
-            # lambda row: calculate_heatflux(row[column], T_S, calibration_row['number'].values[0], calibration_data),
-            # axis=1
-            # )
+                HeatfluxData['HeatFlux' + column] = calculate_heatflux_vectorized(sensor_data[column], S)
+                # #print(column[0:2])
+                # calibration_row = calibration_data[calibration_data['serial number'] == sensor_id]
+                # HeatfluxData['HeatFlux' + column] = sensor_data.apply(
+                # lambda row: calculate_heatflux(row[column], T_S, calibration_row['number'].values[0], calibration_data),
+                # axis=1
+                # )
+            if column == "Current_temp_1":
+                sensor_id = 'E2'
+                #T_S=
+                print("COLUMN:")
+                print(column)
+                T_S = Peltier_control['Current_temp_2'][SensorIndex]
+                #print(str(column[0:2]) + ' is ' + T_S + ' °C')
+                # print(T_S)
+                if np.isnan(T_S):
+                    print('Temperature is not a number for ' + column)
+
+                calibration_row = calibration_data[calibration_data['serial number'] == sensor_id].iloc[0]
+                S_0 = calibration_row['Sensitivity S0']
+                S_C = calibration_row['Correction factor Sc']
+                S = calculate_sensitivity(S_0, S_C, T_S)
+
+                HeatfluxData['HeatFlux' + column] = calculate_heatflux_vectorized(sensor_data[column], S)
+                # #print(column[0:2])
+                # calibration_row = calibration_data[calibration_data['serial number'] == sensor_id]
+                # HeatfluxData['HeatFlux' + column] = sensor_data.apply(
+                # lambda row: calculate_heatflux(row[column], T_S, calibration_row['number'].values[0], calibration_data),
+                # axis=1
+                # )
 
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
 HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)

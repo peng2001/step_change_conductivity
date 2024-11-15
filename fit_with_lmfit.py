@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import toml
 from setup import *
 
-config_file = "config_20to25.toml"
+config_file = "config_30to35.toml"
 
 ##########################################################
 
@@ -35,7 +35,7 @@ def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
     k_guess = -0.1
     alpha_guess = 0.001
-    offset_guess = -170
+    offset_guess = 600
     params = model.make_params(conductivity=k_guess,diffusivityEminus5=alpha_guess,heat_flux_offset=offset_guess)
     # params['heat_flux_offset'].set(value=offset_guess, vary=False) # FIX IT SO THAT IT WONT BE FITTED
     result = model.fit(heat_flux_list, params, t=time_list)

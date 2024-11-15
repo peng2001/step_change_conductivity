@@ -11,7 +11,7 @@ def calculate_sensitivity(S_0, S_C, T_S, T_0=22.5):
     return S_0 + (T_S - T_0) * S_C
 
 def calculate_heatflux_vectorized(U, S):
-    return U / S
+    return U.astype(float) / S
 
 # List all files in the directory
 files = os.listdir(directory)
@@ -80,7 +80,7 @@ for file in files:
         sensor_data = pd.read_csv(sensor_data_file_path, decimal=",")
         sensor_data = sensor_data[['Unnamed: 0', 'E1 flux Last (V)', 'E2 flux Last (V)']]
         # sensor_data = sensor_data.apply(pd.to_numeric, errors='coerce')
-        sensor_data.columns = sensor_data.columns.str.replace(' flux Last (V)', '', regex=True)
+        sensor_data.columns = sensor_data.columns.str.replace(r'\sflux\sLast\s\(V\)', '', regex=True)
 
         # Read the calibration data CSV file
         calibration_data_file_path = 'Heat_flux_sensors_calibration.csv'
@@ -92,7 +92,6 @@ for file in files:
         #T_S=25
         HeatfluxData=pd.DataFrame()
         HeatfluxData['time']=pd.to_datetime(sensor_data['Unnamed: 0'], format='%Y-%m-%dT%H:%M:%S%z')
-        print(HeatfluxData)
         if 'CyclerData' in locals():
             CyclerData['DPT Time Adjust'] = CyclerData['DPT Time']
             SensorIndex=(HeatfluxData['time'].dt.tz_localize('UTC+01:00') - CyclerData['DPT Time Adjust'][0]).abs().idxmin()    
@@ -100,9 +99,9 @@ for file in files:
             SensorIndex = 1011
 
         for column in sensor_data.columns[1:]:
-            if column == "Current_temp_1":
+            if column == "E1":
                 sensor_id = 'E1'
-                T_S = Peltier_control['Current_temp_' + column[0:2]][SensorIndex]
+                T_S = Peltier_control['Current_temp_1'][SensorIndex]
                 #print(str(column[0:2]) + ' is ' + T_S + ' °C')
                 # print(T_S)
                 if np.isnan(T_S):
@@ -120,11 +119,9 @@ for file in files:
                 # lambda row: calculate_heatflux(row[column], T_S, calibration_row['number'].values[0], calibration_data),
                 # axis=1
                 # )
-            if column == "Current_temp_1":
+            if column == "E2":
                 sensor_id = 'E2'
                 #T_S=
-                print("COLUMN:")
-                print(column)
                 T_S = Peltier_control['Current_temp_2'][SensorIndex]
                 #print(str(column[0:2]) + ' is ' + T_S + ' °C')
                 # print(T_S)

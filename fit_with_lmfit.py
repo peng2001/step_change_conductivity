@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import toml
 from setup import *
 
-config_file = "config_30to35.toml"
+config_file = "config/100soc/config_30to35.toml"
 
 ##########################################################
 

@@ -1,4 +1,4 @@
-directory = 'data/test'
+directory = 'data/through-plane-data'
 
 import os
 import pandas as pd

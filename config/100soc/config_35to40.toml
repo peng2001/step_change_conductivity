@@ -1,0 +1,6 @@
+L = 0.0057                  # metres, equals 1/2 of cell thickness
+deltaT = 5                  # degrees C, magnitude of step change
+start_time = 7204           # start time elapsed, when the heat flux jumps, seconds
+start_time_addition = 10    # added to start time, determined manually, from the time diff when power is applied until temperature reaches steady state)
+end_time = 7800             # end time elapsed to fit equation, seconds
+fitting_time_skip = 20      # seconds, integer, ignore first few seconds because of overshoot

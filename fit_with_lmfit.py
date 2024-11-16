@@ -4,6 +4,7 @@ from lmfit import Model, Parameters
 import matplotlib.pyplot as plt
 import toml
 from setup import *
+import math
 
 config_file = "config/100soc/config_35to40.toml"
 
@@ -29,6 +30,9 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5,heat_flux_offset):
         tau = 1/((diffusivityEminus5*10**(-5))*(s**2))
         summation += (-2*deltaT/L)*np.exp(-t/tau)
     return conductivity*summation + heat_flux_offset
+
+def round_5_sig(x):
+    return round(x, 5-int(math.floor(math.log10(abs(x))))-1)
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
@@ -89,10 +93,10 @@ if __name__ == "__main__":
     diffusivity = (diffusivityEminus5)*10**(-5)
     diffusivity_error = (diffusivityEminus5_error)*10**(-5)
     print("**Results**")
-    print("Conductivity: "+str(conductivity)+" W/(m*K)")
-    print("Diffusivity: "+str(diffusivity)+" m^2/s")
+    print("Conductivity: "+str(round_5_sig(conductivity))+" W/(m*K)")
+    print("Diffusivity: "+str(round_5_sig(diffusivity))+" m^2/s")
     print("Conductivity stderr: "+str(conductivity_error)+" W/(m*K)")
     print("Diffusivity stderr: "+str(diffusivity_error)+" m^2/s")
-    print("Heat flux offset: "+str(heat_flux_offset)+" W/m^2")
+    print("Heat flux offset: "+str(round_5_sig(heat_flux_offset))+" W/m^2")
     graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     graph_heat_vs_time_and_fitted_eqn(time_window, heat_fluxes, conductivity,diffusivityEminus5,heat_flux_offset)

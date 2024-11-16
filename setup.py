@@ -130,6 +130,7 @@ for file in files:
             # axis=1
             # )
 
+HeatfluxData = HeatfluxData.drop(columns=["HeatFluxD3_D12"]) # remove this column because of weird readings
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
 HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
 

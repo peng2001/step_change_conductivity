@@ -101,7 +101,7 @@ for file in files:
             if column == "E1":
                 sensor_id = 'E1'
                 T_S = Peltier_control['Current_temp_1'][SensorIndex]
-                #print(str(column[0:2]) + ' is ' + T_S + ' °C')
+                # print(str(column[0:2]) + ' is ' + str(T_S) + ' °C')
                 # print(T_S)
                 if np.isnan(T_S):
                     print('Temperature is not a number for ' + column)
@@ -122,7 +122,7 @@ for file in files:
                 sensor_id = 'E2'
                 #T_S=
                 T_S = Peltier_control['Current_temp_2'][SensorIndex]
-                #print(str(column[0:2]) + ' is ' + T_S + ' °C')
+                # print(str(column[0:2]) + ' is ' + str(T_S) + ' °C')
                 # print(T_S)
                 if np.isnan(T_S):
                     print('Temperature is not a number for ' + column)

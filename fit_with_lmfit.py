@@ -6,7 +6,7 @@ import toml
 from setup import *
 import math
 
-config_file = "config/100soc/config_35to40.toml"
+config_file = "config/75soc/config_35to40.toml"
 
 ##########################################################
 
@@ -31,8 +31,8 @@ def step_change_heat_flux(t, conductivity,diffusivityEminus5,heat_flux_offset):
         summation += (-2*deltaT/L)*np.exp(-t/tau)
     return conductivity*summation + heat_flux_offset
 
-def round_5_sig(x):
-    return round(x, 5-int(math.floor(math.log10(abs(x))))-1)
+def round_4_sig(x):
+    return round(x, 4-int(math.floor(math.log10(abs(x))))-1)
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
@@ -76,8 +76,16 @@ def calculate_fit_error(exp_time, exp_heatflux, conductivity,diffusivity,heat_fl
 
 
 if __name__ == "__main__":
-    print(HeatfluxData.columns)
-    print(HeatfluxData.time[start_time])
+    dq_dt = np.gradient(HeatfluxData.average_heatflux, HeatfluxData.time_elapsed) # Find time values where dq/dt > 100 time_values = t[dq_dt > 100]
+    jump_times = HeatfluxData.time_elapsed[dq_dt < -50]
+    filtered_times = []
+    previous_time = None
+    for time in jump_times:
+        if previous_time is None or (time - previous_time > 100):
+            filtered_times.append(time)
+            previous_time = time
+    print("Times where the step change starts")
+    print(str(filtered_times))
     heat_flux_column = HeatfluxData.average_heatflux
     time_window = np.subtract([time for time in HeatfluxData.time_elapsed if start_time <= time <= end_time], start_time)
     heat_fluxes = [heat_flux_column[i] for i in range(len(HeatfluxData.time_elapsed)) if start_time <= HeatfluxData.time_elapsed[i] <= end_time]
@@ -93,10 +101,10 @@ if __name__ == "__main__":
     diffusivity = (diffusivityEminus5)*10**(-5)
     diffusivity_error = (diffusivityEminus5_error)*10**(-5)
     print("**Results**")
-    print("Conductivity: "+str(round_5_sig(conductivity))+" W/(m*K)")
-    print("Diffusivity: "+str(round_5_sig(diffusivity))+" m^2/s")
+    print("Conductivity: "+str(round_4_sig(conductivity))+" W/(m*K)")
+    print("Diffusivity: "+str(round_4_sig(diffusivity))+" m^2/s")
     print("Conductivity stderr: "+str(conductivity_error)+" W/(m*K)")
     print("Diffusivity stderr: "+str(diffusivity_error)+" m^2/s")
-    print("Heat flux offset: "+str(round_5_sig(heat_flux_offset))+" W/m^2")
+    print("Heat flux offset: "+str(round_4_sig(heat_flux_offset))+" W/m^2")
     graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     graph_heat_vs_time_and_fitted_eqn(time_window, heat_fluxes, conductivity,diffusivityEminus5,heat_flux_offset)

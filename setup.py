@@ -15,8 +15,7 @@ def calculate_heatflux_vectorized(U, S):
 
 # List all files in the directory
 files = os.listdir(directory)
-files = sorted(files, key=lambda x: (not 'peltier_control' in x, x)) # first evaluate peltier_control
-
+files = sorted(files, key=lambda x: (not 'eric_carlos' in x, x)) # first evaluate peltier_control
 for file in files:
     if 'eric_carlos' in file:
         # Determine the prefix (A, B, C, or D) from the filename
@@ -74,7 +73,7 @@ for file in files:
         CyclerData['DPT Time'] = pd.to_datetime(CyclerData['DPT Time'], format='%d-%b-%y %I:%M:%S %p') 
         CyclerData['DPT Time'] = CyclerData['DPT Time'].dt.tz_localize('Europe/London')
 
-    elif 'stepchange' in file:
+    elif 'heatflux' in file:
         sensor_data_file_path = os.path.join(directory, file)
 
         sensor_data = pd.read_csv(sensor_data_file_path, decimal=",")

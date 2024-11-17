@@ -74,9 +74,16 @@ def calculate_fit_error(exp_time, exp_heatflux, conductivity,diffusivity,heat_fl
 
 
 if __name__ == "__main__":
-    print("Heat flux data columns")
-    print(HeatfluxData)
-    print(HeatfluxData.time[start_time])
+    dq_dt = np.gradient(HeatfluxData.average_heatflux, HeatfluxData.time_elapsed) # Find time values where dq/dt > 100 time_values = t[dq_dt > 100]
+    jump_times = HeatfluxData.time_elapsed[dq_dt < -50]
+    filtered_times = []
+    previous_time = None
+    for time in jump_times:
+        if previous_time is None or (time - previous_time > 100):
+            filtered_times.append(time)
+            previous_time = time
+    print("Times where the step change starts")
+    print(str(filtered_times))
     heat_flux_column = HeatfluxData.average_heatflux
     graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     time_window = np.subtract([time for time in HeatfluxData.time_elapsed if start_time <= time <= end_time], start_time)

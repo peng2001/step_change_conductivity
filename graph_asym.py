@@ -2,10 +2,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
-offset1 = 0 # offset by degrees C, thermocouple calibration
-offset2 = 0
-offset3 = 0
-offset4 = 0
+offset1 = -0.3 # offset by degrees C, thermocouple calibration
+offset2 = +0.03
+offset3 = +0.35
+offset4 = +0.45
 offset5 = 0
 
 # Load the CSV file

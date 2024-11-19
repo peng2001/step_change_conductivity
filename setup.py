@@ -132,6 +132,8 @@ for file in files:
 
 HeatfluxData = HeatfluxData.drop(columns=["HeatFluxD3_D12"]) # remove this column because of weird readings
 HeatfluxData = HeatfluxData.drop(columns=["HeatFluxA4_C08"]) # remove this column because of weird readings
+HeatfluxData = HeatfluxData.drop(columns=["HeatFluxA6_C11"]) # remove this column because of weird readings
+HeatfluxData = HeatfluxData.drop(columns=["HeatFluxC6_D04"]) # remove this column because of weird readings
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
 HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
 

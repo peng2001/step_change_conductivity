@@ -7,7 +7,7 @@ import toml
 from setup import *
 import math
 
-config_file = "config/100soc/config_35to40.toml"
+config_file = "config/100soc/config_30to35.toml"
 
 ##########################################################
 
@@ -37,9 +37,9 @@ def round_4_sig(x):
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
     model = Model(step_change_heat_flux)
-    k_guess = -0.1
-    alpha_guess = 0.001
-    offset_guess = 700
+    k_guess = -11
+    alpha_guess = 1.5
+    offset_guess = 300
     params = model.make_params(conductivity=k_guess,diffusivityEminus5=alpha_guess,heat_flux_offset=offset_guess)
     # params['heat_flux_offset'].set(value=offset_guess, vary=False) # FIX IT SO THAT IT WONT BE FITTED
     result = model.fit(heat_flux_list, params, t=time_list)
@@ -89,7 +89,7 @@ if __name__ == "__main__":
     print("Times where the step change starts")
     print(str(filtered_times))
     heat_flux_column = HeatfluxData.average_heatflux
-    graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
+    # graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
     time_window = np.subtract([time for time in HeatfluxData.time_elapsed if start_time <= time <= end_time], start_time)
     heat_fluxes = [heat_flux_column[i] for i in range(len(HeatfluxData.time_elapsed)) if start_time <= HeatfluxData.time_elapsed[i] <= end_time]
     heat_fluxes = savgol_filter(heat_fluxes, window_length=1000, polyorder=2) # smooth the data with savgol filter

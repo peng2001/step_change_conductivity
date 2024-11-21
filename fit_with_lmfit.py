@@ -6,7 +6,7 @@ import toml
 from setup import *
 import math
 
-config_file = "config/75soc/config_35to40.toml"
+config_file = "config/100soc/config_15to20.toml"
 
 ##########################################################
 
@@ -35,7 +35,7 @@ def exponential(t, initial, asymptote, tau):
     return asymptote + (initial - asymptote) * np.exp(-t / tau)
 
 def fit_exponential(time_list, heat_flux_list):
-    initial_value_guess = -300
+    initial_value_guess = 0
     asymptote_guess = HeatfluxData.average_heatflux[next(i for i, t in enumerate(HeatfluxData.time_elapsed) if t >= inputs["end_time"])]
     tau_guess = 50
     popt, pcov = curve_fit(exponential, time_list, heat_flux_list, p0=[initial_value_guess, asymptote_guess, tau_guess])
@@ -132,7 +132,7 @@ if __name__ == "__main__":
     # print(fitted_initial)
     # print(fitted_asymptote)
     # print(fitted_tau)
-    losses = [exponential(t, initial=-74, asymptote=fitted_asymptote, tau=fitted_tau) for t in time_window]
+    losses = [exponential(t, initial=initial_loss_estimate, asymptote=fitted_asymptote, tau=fitted_tau) for t in time_window]
     linspace_time = np.arange(time_window[0]+fitting_time_skip, time_window[-1], 1)
     adjusted_heat_flux = np.subtract(heat_fluxes, losses)
     adjusted_heat_fluxes_for_fitting = [adjusted_heat_flux[i] for i in range(len(time_window)) if time_window[i] >= fitting_time_skip]

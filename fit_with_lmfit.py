@@ -55,10 +55,11 @@ def fit_heat_flux_equation(time_list, heat_flux_list):
 def round_4_sig(x):
     return round(x, 4-int(math.floor(math.log10(abs(x))))-1)
 
-def graph_heat_vs_time_and_fitted_eqn(exp_time, exp_heatflux, conductivity, diffusivity, heat_flux_offset):
+def graph_heat_vs_time_and_fitted_eqn(exp_time, exp_heatflux, adjusted_heat_flux, conductivity, diffusivity, heat_flux_offset):
     linspace_time = np.arange(exp_time[0]+fitting_time_skip, exp_time[-1], 1)
     fitted_heat_flux = [step_change_heat_flux(t, conductivity, diffusivity, heat_flux_offset) for t in linspace_time]
     plt.plot(exp_time, exp_heatflux, label="Experimental", color="blue")
+    plt.plot(exp_time, adjusted_heat_flux, label="Experimental with Losses Removed", color="purple")
     plt.plot(linspace_time, fitted_heat_flux, label="Fitted Equation", color="red")
     linspace_time_overshoot = np.arange(2, fitting_time_skip+1, 1)
     fitted_heat_flux_overshoot = [step_change_heat_flux(t, conductivity, diffusivity, heat_flux_offset) for t in linspace_time_overshoot]
@@ -163,4 +164,4 @@ if __name__ == "__main__":
     print("Diffusivity stderr: "+str(diffusivity_error)+" m^2/s")
     # print("Heat flux offset: "+str(round_4_sig(heat_flux_offset))+" W/m^2")
     # graph_heat_vs_time(HeatfluxData.time_elapsed, HeatfluxData.average_heatflux)
-    graph_heat_vs_time_and_fitted_eqn(time_window, adjusted_heat_flux, conductivity,diffusivityEminus5,heat_flux_offset=0)
+    graph_heat_vs_time_and_fitted_eqn(time_window, heat_fluxes, adjusted_heat_flux, conductivity,diffusivityEminus5,heat_flux_offset=0)

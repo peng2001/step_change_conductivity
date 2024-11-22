@@ -6,7 +6,7 @@ import toml
 from setup import *
 import math
 
-config_file = "config/75soc/config_1520.toml"
+config_file = "config/75soc/config_3540.toml"
 
 ##########################################################
 

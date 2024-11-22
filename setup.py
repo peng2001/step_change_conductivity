@@ -1,4 +1,4 @@
-directory = 'data/through-plane-data/75soc'
+directory = 'data/through-plane-data/25soc'
 
 import os
 import pandas as pd

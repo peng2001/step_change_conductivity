@@ -1,10 +1,16 @@
-directory = 'data/through-plane-data/25soc'
+directory = 'data/through-plane-data/100soc'
+config_file = "config/100soc/config_3540.toml"
 
 import os
 import pandas as pd
 import numpy as np
 from io import StringIO
+import toml
 
+
+with open(config_file, 'r') as f:
+    inputs = toml.load(f)
+T_S = inputs["temperature"]
 
 data_columns_Peltier = ['Current_temp_A0', 'Current_temp_A1', 'Current_temp_A2','Current_temp_A3', 'Current_temp_A4', 'Current_temp_A5','Current_temp_A6', 'Current_temp_A7',  'Current_temp_B0', 'Current_temp_B1', 'Current_temp_B2','Current_temp_B3', 'Current_temp_B4', 'Current_temp_B5','Current_temp_B6', 'Current_temp_Falz-','Current_temp_C0', 'Current_temp_C1', 'Current_temp_C2','Current_temp_C3', 'Current_temp_C4', 'Current_temp_C5','Current_temp_C6', 'Current_temp_C7_Ableiter+','Current_temp_D0', 'Current_temp_D1', 'Current_temp_D2','Current_temp_D3', 'Current_temp_D4', 'Current_temp_D5','Current_temp_D6', 'Current_temp_D7_Ableiter-','time']
 
@@ -100,19 +106,6 @@ for file in files:
 
         for column in sensor_data.columns[1:]:
             sensor_id = '003066-' +column[-3:]
-            #T_S=
-            if column[0] == 'A':
-                T_S = Peltier_control_A['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'B':
-                T_S = Peltier_control_B['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'C':
-                T_S = Peltier_control_C['Current_temp_' + column[0:2]][SensorIndex]
-            elif column[0] == 'D':
-                T_S = Peltier_control_D['Current_temp_' + column[0:2]][SensorIndex]
-            else:
-                result = None
-                print("Column prefix not recognized")
-            #print(str(column[0:2]) + ' is ' + T_S + ' °C')
             # print(T_S)
             if np.isnan(T_S):
                 print('Temperature is not a number for ' + column)

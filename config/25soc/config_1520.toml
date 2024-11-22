@@ -1,4 +1,5 @@
-L = 0.005815                  # metres, equals 1/2 of cell thickness
+L = 0.005815                  # metres, equals 1/2 of cell thickness1 second sampling
+temperature = 20            # degrees C, final temperature
 deltaT = 5                  # degrees C, magnitude of step change
 start_time = 41           # start time elapsed, when the heat flux jumps, seconds
 start_time_addition = 10    # added to start time, determined manually, from the time diff when power is applied until temperature reaches steady state)

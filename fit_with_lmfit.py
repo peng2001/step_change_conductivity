@@ -2,11 +2,8 @@ import numpy as np
 from scipy.optimize import curve_fit
 from lmfit import Model, Parameters
 import matplotlib.pyplot as plt
-import toml
 from setup import *
 import math
-
-config_file = "config/75soc/config_3540.toml"
 
 ##########################################################
 

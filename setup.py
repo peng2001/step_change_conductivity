@@ -1,9 +1,16 @@
 directory = 'data/in-plane-thermal-cond/75soc'
+config_file = "config/75soc/config_1520.toml"
 
 import os
 import pandas as pd
 import numpy as np
 from io import StringIO
+import toml
+
+
+with open(config_file, 'r') as f:
+    inputs = toml.load(f)
+T_S = inputs["temperature"]
 
 data_columns_Peltier = ['Current_temp_1', 'Current_temp_2', 'time']
 
@@ -100,11 +107,6 @@ for file in files:
         for column in sensor_data.columns[1:]:
             if column == "E1":
                 sensor_id = 'E1'
-                T_S = Peltier_control['Current_temp_1'][SensorIndex]
-                # print(str(column[0:2]) + ' is ' + str(T_S) + ' °C')
-                # print(T_S)
-                if np.isnan(T_S):
-                    print('Temperature is not a number for ' + column)
 
                 calibration_row = calibration_data[calibration_data['serial number'] == sensor_id].iloc[0]
                 S_0 = calibration_row['Sensitivity S0']
@@ -120,12 +122,6 @@ for file in files:
                 # )
             if column == "E2":
                 sensor_id = 'E2'
-                #T_S=
-                T_S = Peltier_control['Current_temp_2'][SensorIndex]
-                # print(str(column[0:2]) + ' is ' + str(T_S) + ' °C')
-                # print(T_S)
-                if np.isnan(T_S):
-                    print('Temperature is not a number for ' + column)
 
                 calibration_row = calibration_data[calibration_data['serial number'] == sensor_id].iloc[0]
                 S_0 = calibration_row['Sensitivity S0']

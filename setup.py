@@ -1,4 +1,4 @@
-directory = 'data/in-plane-thermal-cond/no_current_wires_data'
+directory = 'data/in-plane-thermal-cond/75soc'
 
 import os
 import pandas as pd
@@ -142,6 +142,17 @@ for file in files:
 
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
 HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
+
+dq_dt = np.gradient(HeatfluxData.average_heatflux, HeatfluxData.time_elapsed) # Find time values where dq/dt > 100 time_values = t[dq_dt > 100]
+jump_times = HeatfluxData.time_elapsed[dq_dt < -100]
+filtered_times = []
+previous_time = None
+for time in jump_times:
+    if previous_time is None or (time - previous_time > 100):
+        filtered_times.append(time)
+        previous_time = time
+print("Times where the step change starts")
+print(str(filtered_times))
 
 # try:
 #     del metadata_lines, data_lines, lines, line, data, data_section, key, txt_file_path, value

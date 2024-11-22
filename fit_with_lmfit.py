@@ -223,6 +223,6 @@ if __name__ == "__main__":
     
     sum_of_errors_k = np.sum(delta_ks+conductivity_error)
     sum_of_errors_alpha = np.sum(delta_alphas+diffusivity_error)
-    print("Conductivity: "+str(round_sig(conductivity, 4))+" W/(m*K)"+" +- "+str(round_sig(sum_of_errors_k, 2)))
-    print("Diffusivity: "+str(round_sig(diffusivity, 4))+" m^2/s"+" +-" +str(round_sig(sum_of_errors_alpha, 2)))
+    print("Conductivity: "+str(round_sig(conductivity, 4))+" W/(m*K)"+" +- "+str(round_sig((sum_of_errors_k/conductivity)*100, 2))+"%")
+    print("Diffusivity: "+str(round_sig(diffusivity, 4))+" m^2/s"+" +-" +str(round_sig((sum_of_errors_alpha/diffusivity)*100, 2))+"%")
     

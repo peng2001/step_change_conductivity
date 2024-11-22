@@ -6,7 +6,7 @@ import toml
 from setup import *
 import math
 
-config_file = "config/75soc/config_30to35.toml"
+config_file = "config/75soc/config_15to20.toml"
 
 ##########################################################
 
@@ -53,8 +53,8 @@ def fit_heat_flux_equation(time_list, heat_flux_list):
     result = model.fit(heat_flux_list, params, t=time_list)
     return result
 
-def round_4_sig(x):
-    return round(x, 4-int(math.floor(math.log10(abs(x))))-1)
+def round_sig(x, sig):
+    return round(x, sig-int(math.floor(math.log10(abs(x))))-1)
 
 def graph_heat_vs_time_and_fitted_eqn(exp_time, exp_heatflux, adjusted_heat_flux, conductivity, diffusivity, heat_flux_offset):
     linspace_time = np.arange(exp_time[0]+fitting_time_skip, exp_time[-1], 1)
@@ -223,6 +223,6 @@ if __name__ == "__main__":
     
     sum_of_errors_k = np.sum(delta_ks+conductivity_error)
     sum_of_errors_alpha = np.sum(delta_alphas+diffusivity_error)
-    print("Conductivity: "+str(round_4_sig(conductivity))+" W/(m*K)"+" +- "+str(round_4_sig(sum_of_errors_k)))
-    print("Diffusivity: "+str(round_4_sig(diffusivity))+" m^2/s"+" +-" +str(round_4_sig(sum_of_errors_alpha)))
+    print("Conductivity: "+str(round_sig(conductivity, 4))+" W/(m*K)"+" +- "+str(round_sig(sum_of_errors_k, 2)))
+    print("Diffusivity: "+str(round_sig(diffusivity, 4))+" m^2/s"+" +-" +str(round_sig(sum_of_errors_alpha, 2)))
     

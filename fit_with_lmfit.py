@@ -13,7 +13,7 @@ with open(config_file, 'r') as f:
 L_orig = inputs["L"] # metres, equals 1/2 of cell thickness
 deltaT_orig = inputs["deltaT"] # degrees C, magnitude of step change
 HeatfluxData_orig = HeatfluxData
-start_time_orig = inputs["start_time"]+inputs["start_time_addition"] # start time elapsed to fit equation, seconds (the addition is determined manually, from the time diff when power is applied until temperature reaches steady state)
+start_time = inputs["start_time"]+inputs["start_time_addition"] # start time elapsed to fit equation, seconds (the addition is determined manually, from the time diff when power is applied until temperature reaches steady state)
 end_time = inputs["end_time"] # end time elapsed to fit equation, seconds
 fitting_time_skip = inputs["fitting_time_skip"] # seconds, integer, ignore first few seconds because of overshoot
 
@@ -153,7 +153,7 @@ def run_fitting():
 
 if __name__ == "__main__":
     print("Fitting using measured parameters")
-    L = L_orig; deltaT = deltaT_orig; HeatfluxData = HeatfluxData_orig; start_time = start_time_orig
+    L = L_orig; deltaT = deltaT_orig; HeatfluxData = HeatfluxData_orig
     conductivity, diffusivity, conductivity_error, diffusivity_error = run_fitting()
     print("**Results**")
     # print("Conductivity: "+str(round_4_sig(conductivity))+" W/(m*K)")
@@ -201,24 +201,6 @@ if __name__ == "__main__":
     delta_alphas.append(abs(max(abs(delta_alpha_1), abs(delta_alpha_2))))
 
     # print("______________________________")
-    # print("Fitting using start time + uncertainty")
-    start_time = start_time_orig+1
-    conductivity_new, diffusivity_new, conductivity_error_new, diffusivity_error_new = run_fitting()
-    delta_k_1 = conductivity_new-conductivity
-    delta_alpha_1 = diffusivity_new-diffusivity
-    # print("delta k: "+str(conductivity_new-conductivity))
-    # print("delta alpha: "+str(diffusivity_new-diffusivity))
-    # print("Fitting using deltaT - uncertainty")
-    start_time = start_time_orig-1
-    conductivity_new, diffusivity_new, conductivity_error_new, diffusivity_error_new = run_fitting()
-    delta_k_2 = conductivity_new-conductivity
-    # delta_alpha_2 = diffusivity_new-diffusivity
-    # print("delta k: "+str(conductivity_new-conductivity))
-    # print("delta alpha: "+str(diffusivity_new-diffusivity))
-    delta_ks.append(abs(max(abs(delta_k_1), abs(delta_k_2))))
-    delta_alphas.append(abs(max(abs(delta_alpha_1), abs(delta_alpha_2))))
-
-    # print("______________________________")
     # print("Fitting using Heat flux + uncertainty and start, - uncertainty at end")
     HeatfluxData.average_heatflux = np.multiply(HeatfluxData_orig.average_heatflux, np.linspace(1.03, 0.97, len(HeatfluxData_orig.average_heatflux)))
     conductivity_new, diffusivity_new, conductivity_error_new, diffusivity_error_new = run_fitting()
@@ -235,8 +217,6 @@ if __name__ == "__main__":
     # print("delta alpha: "+str(diffusivity_new-diffusivity))
     delta_ks.append(abs(max(abs(delta_k_1), abs(delta_k_2))))
     delta_alphas.append(abs(max(abs(delta_alpha_1), abs(delta_alpha_2))))
-
-    
     
     sum_of_errors_k = np.sum(delta_ks+conductivity_error)
     sum_of_errors_alpha = np.sum(delta_alphas+diffusivity_error)

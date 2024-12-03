@@ -1,5 +1,5 @@
-directory = 'data/in-plane-thermal-cond/75soc'
-config_file = "config/75soc/config_3540.toml"
+directory = 'data/in-plane-thermal-cond/100soc'
+config_file = "config/100soc/config_3540.toml"
 
 import os
 import pandas as pd

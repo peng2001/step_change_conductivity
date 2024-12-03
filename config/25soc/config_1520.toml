@@ -1,4 +1,4 @@
-L = 0.354                 # metres, equals 1/2 of cell thickness
+L = 0.177                 # metres, equals 1/2 of cell thickness
 temperature = 20            # degrees C, final temperature
 deltaT = 5                  # degrees C, magnitude of step change
 start_time = 1194           # start time elapsed, when the heat flux jumps, seconds

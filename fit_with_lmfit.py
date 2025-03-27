@@ -126,9 +126,9 @@ def run_fitting():
     linspace_time = np.arange(time_window[0]+fitting_time_skip, time_window[-1], 1)
     adjusted_heat_flux = np.subtract(heat_fluxes, losses)
     adjusted_heat_fluxes_for_fitting = [adjusted_heat_flux[i] for i in range(len(time_window)) if time_window[i] >= fitting_time_skip]
-    fitted_exponential = [exponential(t, fitted_initial, fitted_asymptote, fitted_tau) for t in linspace_time]
+    # fitted_exponential = [exponential(t, fitted_initial, fitted_asymptote, fitted_tau) for t in linspace_time]
     # plt.plot(time_window, heat_fluxes, label="Experimental", color="blue")
-    # # plt.plot(time_window, loss_curve, label="Losses", color="green")
+    # plt.plot(time_window, losses, label="Losses", color="green")
     # plt.plot(time_window, adjusted_heat_flux, label="Heat flux with losses adjusted", color="purple")
     # linspace_time_overshoot = np.arange(2, fitting_time_skip+1, 1)
     # plt.plot(linspace_time, fitted_exponential, color="black", label="Fitted Exponential")

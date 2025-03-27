@@ -1,11 +1,14 @@
-directory = 'data/in-plane-thermal-cond/100soc'
-config_file = "config/100soc/config_3540.toml"
+directory = 'data/in-plane-thermal-cond/25soc_1530'
+config_file = "config/25soc/config_2025.toml"
 
 import os
 import pandas as pd
 import numpy as np
 from io import StringIO
 import toml
+
+tab_Cu_Rt = 16.82 # K/W
+tab_Al_Rt = 24.21 # K/W
 
 
 with open(config_file, 'r') as f:
@@ -137,7 +140,7 @@ for file in files:
                 # )
 
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
-HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
+HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1) # * tab area divided by cell cross section
 
 dq_dt = np.gradient(HeatfluxData.average_heatflux, HeatfluxData.time_elapsed) # Find time values where dq/dt > 100 time_values = t[dq_dt > 100]
 jump_times = HeatfluxData.time_elapsed[dq_dt < -100]

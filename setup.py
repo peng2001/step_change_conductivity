@@ -129,7 +129,6 @@ HeatfluxData = HeatfluxData.drop(columns=["HeatFluxA6_C11"]) # remove this colum
 HeatfluxData = HeatfluxData.drop(columns=["HeatFluxC6_D04"]) # remove this column because of weird readings
 HeatfluxData.average_heatflux = HeatfluxData.iloc[:, 1:].mean(axis=1)
 HeatfluxData.time_elapsed = (HeatfluxData.time - HeatfluxData.time.iloc[0]).dt.total_seconds()
-print(HeatfluxData)
 dq_dt = np.gradient(HeatfluxData.average_heatflux, HeatfluxData.time_elapsed) # Find time values where dq/dt > 100 time_values = t[dq_dt > 100]
 jump_times = HeatfluxData.time_elapsed[dq_dt < -100]
 filtered_times = []

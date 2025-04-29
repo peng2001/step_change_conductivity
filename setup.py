@@ -1,5 +1,5 @@
-directory = 'data/through-plane-data/100soc'
-config_file = "config/100soc/config_3540.toml"
+directory = 'data/through-plane-data/50soc'
+config_file = "config/50soc/config_3540.toml"
 
 import os
 import pandas as pd

@@ -40,6 +40,7 @@ def fit_exponential(time_list, heat_flux_list):
     tau_guess = 50
     popt, pcov = curve_fit(exponential, time_list, heat_flux_list, p0=[initial_value_guess, asymptote_guess, tau_guess])
     fitted_initial, fitted_asymptote, fitted_tau = popt
+    # print(fitted_tau)
     return fitted_initial, fitted_asymptote, fitted_tau
 
 def fit_heat_flux_equation(time_list, heat_flux_list):
@@ -122,7 +123,8 @@ def run_fitting():
     # print(fitted_initial)
     # print(fitted_asymptote)
     # print(fitted_tau)
-    losses = [exponential(t, initial=initial_loss_estimate, asymptote=fitted_asymptote, tau=fitted_tau) for t in time_window]
+    # losses = [exponential(t, initial=initial_loss_estimate, asymptote=fitted_asymptote, tau=fitted_tau) for t in time_window]
+    losses = np.zeros(len(time_window))+fitted_asymptote
     linspace_time = np.arange(time_window[0]+fitting_time_skip, time_window[-1], 1)
     adjusted_heat_flux = np.subtract(heat_fluxes, losses)
     adjusted_heat_fluxes_for_fitting = [adjusted_heat_flux[i] for i in range(len(time_window)) if time_window[i] >= fitting_time_skip]
